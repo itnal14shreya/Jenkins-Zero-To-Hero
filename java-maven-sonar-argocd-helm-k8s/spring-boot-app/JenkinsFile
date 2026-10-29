@@ -35,15 +35,15 @@ pipeline {
 
     stage('Build and Push Docker Image') {
       environment {
-        DOCKER_IMAGE = "itnalshreya14/ultimate-cicd:${BUILD_NUMBER}"
+        DOCKER_IMAGE = "itnal14shreya/ultimate-cicd:${BUILD_NUMBER}"
       }
       steps {
         echo "Building and pushing Docker image: ${DOCKER_IMAGE}"
         sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && docker build -t ${DOCKER_IMAGE} .'
         sh '''
           docker push ${DOCKER_IMAGE}
-          docker tag ${DOCKER_IMAGE} itnalshreya14/ultimate-cicd:latest
-          docker push itnalshreya14/ultimate-cicd:latest
+          docker tag ${DOCKER_IMAGE} itnal14shreya/ultimate-cicd:latest
+          docker push itnal14shreya/ultimate-cicd:latest
         '''
       }
     }
@@ -56,10 +56,10 @@ pipeline {
       steps {
         withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
           sh '''
-            git config user.email "itnalshreya14@users.noreply.github.com"
+            git config user.email "itnal14shreya@users.noreply.github.com"
             git config user.name "itnal14shreya"
             BUILD_NUMBER=${BUILD_NUMBER}
-            sed -i "s|image: .*ultimate-cicd:.*|image: itnalshreya14/ultimate-cicd:${BUILD_NUMBER}|g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
+            sed -i "s|image: .*ultimate-cicd:.*|image: itnal14shreya/ultimate-cicd:${BUILD_NUMBER}|g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
             git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
             git commit -m "Update deployment image to version ${BUILD_NUMBER} [skip ci]" || echo "No changes to commit"
             git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:main
